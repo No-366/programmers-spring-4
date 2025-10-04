@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:h2:./db_dev;MODE=MySQL # DB 위치
+    #url: jdbc:mysql://localhost:3306/spring3
+    username: sa
+    #username: root
+    password:
+    #password: lldj123414
+    driver-class-name: org.h2.Driver
+    #driver-class-name: com.mysql.cj.jdbc.Driver #정해져있음
