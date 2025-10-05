@@ -5,6 +5,8 @@ import com.backend.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -18,7 +20,7 @@ public class PostController {
     public String write(){
 
         return """
-                <form action="http://localhost:8080/posts/doWrite">
+                <form method="POST" action="http://localhost:8080/posts/doWrite">
                   <input type="text" name="title">
                   <br>
                   <textarea name="content"></textarea>
@@ -28,7 +30,8 @@ public class PostController {
                 """;
     }
 
-    @GetMapping("/posts/doWrite")
+    //POST 요청으로 받는다
+    @PostMapping("/posts/doWrite")
     @ResponseBody
     public String doWrite(
             String title,
