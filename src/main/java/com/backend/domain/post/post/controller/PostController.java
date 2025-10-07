@@ -15,24 +15,24 @@ public class PostController {
 
     private final PostService postService;
 
-    private String getWriteFormHtml(String errorMessage){
+    private String getWriteFormHtml(String errorMessage, String title, String content){
         return """
                 <div style="color:red">%s</div>
                 <form method="POST" action="http://localhost:8080/posts/doWrite">
-                  <input type="text" name="title">
+                  <input type="text" name="title" value="%s">
                   <br>
-                  <textarea name="content"></textarea>
+                  <textarea name="content" >%s</textarea>
                   <br>
                   <input type="submit" value="작성">
                 </form>
-                """.formatted(errorMessage);
+                """.formatted(errorMessage, title, content);
     }
 
     @GetMapping("/posts/write")
     @ResponseBody
     public String write(){
 
-        return getWriteFormHtml("");
+        return getWriteFormHtml("", "","");
     }
 
     //POST 요청으로 받는다
@@ -43,8 +43,8 @@ public class PostController {
             String content
     ){
 
-        if(title.isBlank()) return getWriteFormHtml("제목을 입력해주세요");
-        if(content.isBlank()) return getWriteFormHtml("내용을 입력해주세요");
+        if(title.isBlank()) return getWriteFormHtml("제목을 입력해주세요", title, content);
+        if(content.isBlank()) return getWriteFormHtml("내용을 입력해주세요", title, content);
 
         Post post = postService.write(title, content);
 
