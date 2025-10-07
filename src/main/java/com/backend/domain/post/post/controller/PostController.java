@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +47,7 @@ public class PostController {
         return getWriteFormHtml("", "","", "title");
     }
 
+    //입력값을 모아서 객체로 사용하기위한 역할
     @AllArgsConstructor
     @Getter
     public static class PostWriteForm{
@@ -57,6 +60,7 @@ public class PostController {
         private String content;
     }
 
+
     //POST 요청으로 받는다
     @PostMapping("/posts/doWrite")
     @ResponseBody
@@ -65,7 +69,19 @@ public class PostController {
             //@ModelAttribute("")은 생략 가능,
             //PostWriteform 클래스이름의 첫번째 단어를 소문자로 바꿔서 매개값으로 사용
         @Validated @ModelAttribute("postWriteForm") PostWriteForm form // PostWriteForm 클래스 형태로 변환해서 받겠다
+            , BindingResult bindingResult//보고서 : 이걸 도입하면 내부적으로 체크하되 문제가 발생해도 일단 넘어감
     ){
+        //보고서 사용법
+        if(bindingResult.hasErrors()){
+            FieldError fieldError = bindingResult.getFieldError(); // 여러개의 에러중 하나를 랜덤으로 가져옴(일단 이렇게 진행)
+            String fieldName = fieldError.getField();
+            String errorMessage = fieldError.getDefaultMessage();
+
+            System.out.println("fieldName : " + fieldName);
+            System.out.println("errorMessage : " + errorMessage);
+
+            return getWriteFormHtml(errorMessage, form.title, form.content, fieldName);
+        }
 
         // 아래처럼 일일이 여기에 작성하지 말고 NotBlank와 Size, Validated를 이용하자
 //        if(title.isBlank()) return getWriteFormHtml("제목을 입력해주세요", title, content,"title");
