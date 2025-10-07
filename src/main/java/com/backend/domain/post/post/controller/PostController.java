@@ -53,12 +53,12 @@ public class PostController {
     @AllArgsConstructor
     @Getter
     public static class PostWriteForm{
-        @NotBlank(message = "제목을 입력해주세요")
-        @Size(min = 1, max = 10, message = "제목은 2글자 이상, 10글자 이하로 입력해주세요")
+        @NotBlank(message = "1-제목을 입력해주세요")
+        @Size(min = 1, max = 10, message = "2-제목은 2글자 이상, 10글자 이하로 입력해주세요")
         private String title;
 
-        @NotBlank(message = "내용을 입력해주세요")
-        @Size(min = 1, max = 100, message = "내용은 2글자 이상 100글자 이하로 입력해주세요")
+        @NotBlank(message = "3-내용을 입력해주세요")
+        @Size(min = 1, max = 100, message = "4-내용은 2글자 이상 100글자 이하로 입력해주세요")
         private String content;
     }
 
@@ -81,6 +81,7 @@ public class PostController {
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
                     .map(FieldError::getDefaultMessage)
+                    .sorted()
                     .collect(Collectors.joining("<br>"));
 
             return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
