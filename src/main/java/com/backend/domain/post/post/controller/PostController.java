@@ -52,7 +52,11 @@ public class PostController {
     ){
 
         if(title.isBlank()) return getWriteFormHtml("제목을 입력해주세요", title, content,"title");
+        if(title.length()<2) return getWriteFormHtml("제목은 2글자 이상 적어주세요.", title, content,"title");
+        if(title.length()>10) return getWriteFormHtml("제목은 10글자 이하로 적어주세요", title, content,"title");
         if(content.isBlank()) return getWriteFormHtml("내용을 입력해주세요", title, content, "content");
+        if(content.length()<2) return getWriteFormHtml("내용은 2글자 이상 적어주세요.", title, content,"content");
+        if(content.length()>100) return getWriteFormHtml("내용은 100글자를 넘을 수 없습니다", title, content,"content");
 
         Post post = postService.write(title, content);
 
