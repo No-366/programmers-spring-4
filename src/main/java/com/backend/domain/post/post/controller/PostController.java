@@ -13,6 +13,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
 @Controller
 @RequiredArgsConstructor
 public class PostController {
@@ -73,14 +75,15 @@ public class PostController {
     ){
         //보고서 사용법
         if(bindingResult.hasErrors()){
-            FieldError fieldError = bindingResult.getFieldError(); // 여러개의 에러중 하나를 랜덤으로 가져옴(일단 이렇게 진행)
-            String fieldName = fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
 
-            System.out.println("fieldName : " + fieldName);
-            System.out.println("errorMessage : " + errorMessage);
+            String fieldName = "title";
 
-            return getWriteFormHtml(errorMessage, form.title, form.content, fieldName);
+            String errorMessages = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.joining("<br>"));
+
+            return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
         }
 
         // 아래처럼 일일이 여기에 작성하지 말고 NotBlank와 Size, Validated를 이용하자
