@@ -78,11 +78,18 @@ public class PostController {
 
             String fieldName = "title";
 
+//            String errorMessages = bindingResult.getFieldErrors()
+//                    .stream()
+//                    .map(FieldError::getDefaultMessage)
+//                    .sorted()
+//                    .collect(Collectors.joining("<br>"));
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
-                    .map(FieldError::getDefaultMessage)
+                    .map(field -> field.getField() + "-" + field.getDefaultMessage())
+                    .map(message -> message.split("-"))
+                    .map(bits -> "<!--%s--><li>%s</li>".formatted(bits[1],bits[2]))
                     .sorted()
-                    .collect(Collectors.joining("<br>"));
+                    .collect(Collectors.joining(""));
 
             return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
         }
