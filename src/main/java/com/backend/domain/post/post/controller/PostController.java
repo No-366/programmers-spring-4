@@ -21,9 +21,11 @@ public class PostController {
 
     private final PostService postService;
 
-    private String getWriteFormHtml(String errorMessage, String title, String content, String errorFieldName){
+    private String getWriteFormHtml(String errorMessage, String title, String content){
         return """
-                <div style="color:red">%s</div>
+                <ul style="color:red">
+                %s
+                </ul>
                 <form method="POST" action="http://localhost:8080/posts/doWrite">
                   <input type="text" name="title" value="%s">
                   <br>
@@ -33,20 +35,22 @@ public class PostController {
                 </form>
                 
                 <script>
-                    const errorFieldName = "%s";
+                    const li = document.querySelector("ul li"); //li4개 중 가장 위에거 가져옴 , querySelectorAll은 li 모두 가져오는거
+                    const errorFieldName = li.dataset.errorFieldName; //data-error-field-name을 맨 앞 data 접두어 제외 camel 표기법으로 표현
+                    
                     if(errorFieldName.length > 0) {
                         const form = document.querySelector("form");
                         form[errorFieldName].focus();
                     }
                 </script>
-                """.formatted(errorMessage, title, content, errorFieldName);
+                """.formatted(errorMessage, title, content);
     }
 
     @GetMapping("/posts/write")
     @ResponseBody
     public String write(){
 
-        return getWriteFormHtml("", "","", "title");
+        return getWriteFormHtml("", "","");
     }
 
     //입력값을 모아서 객체로 사용하기위한 역할
@@ -83,15 +87,21 @@ public class PostController {
 //                    .map(FieldError::getDefaultMessage)
 //                    .sorted()
 //                    .collect(Collectors.joining("<br>"));
+
+            //ex)4 - 내용은 2글자 이상
+            // => content - 4 - 내용은 2글자 이상
+            // => <!--4--><li data-error-field-name = "content">내용은 2글자 이상</li>
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
                     .map(field -> field.getField() + "-" + field.getDefaultMessage())
                     .map(message -> message.split("-"))
-                    .map(bits -> "<!--%s--><li>%s</li>".formatted(bits[1],bits[2]))
+                    .map(bits -> """
+                            <!-- %s --><li data-error-field-name = "%s">%s</li>
+                            """.formatted(bits[1],bits[0], bits[2]))
                     .sorted()
                     .collect(Collectors.joining(""));
 
-            return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
+            return getWriteFormHtml(errorMessages, form.title, form.content);
         }
 
         // 아래처럼 일일이 여기에 작성하지 말고 NotBlank와 Size, Validated를 이용하자
