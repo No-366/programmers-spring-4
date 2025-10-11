@@ -9,12 +9,19 @@
 
 </ul>
 
-<form method="POST" action="/posts/doWrite">
-    <input type="text" name="title" th:value="${postWriteForm?.title}" autoFocus>
-    <br>
-    <textarea name="content" th:text="${postWriteForm?.content}"></textarea>
-    <br>
-    <input type="submit" value="작성">
+<form method="POST" action="/posts/doWrite" th:object="${postWriteForm}"> <!-- PostController에서 넘어온 ModelAttribute -->
+    <div>
+        <label for="title" >제목</label>
+        <input type="text" name="title" id="title" placeholder="제목을 입력해주세요" th:value="*{title}" autoFocus>
+    </div>
+    <div>
+        <label for="content">내용</label>
+        <textarea name="content" id="content"  placeholder="내용을 입력해주세요" th:text="*{content}"></textarea>
+    </div>
+    <div>
+        <input type="submit" value="작성">
+    </div>
+
 </form>
 
 <script>
