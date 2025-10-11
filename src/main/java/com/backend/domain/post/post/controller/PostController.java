@@ -2,12 +2,14 @@ package com.backend.domain.post.post.controller;
 
 import com.backend.domain.post.post.entity.Post;
 import com.backend.domain.post.post.service.PostService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -21,37 +23,7 @@ public class PostController {
 
     private final PostService postService;
 
-    private String getWriteFormHtml(String errorMessage, String title, String content){
-        return """
-                <ul style="color:red">
-                %s
-                </ul>
-                <form method="POST" action="http://localhost:8080/posts/doWrite">
-                  <input type="text" name="title" value="%s">
-                  <br>
-                  <textarea name="content" >%s</textarea>
-                  <br>
-                  <input type="submit" value="작성">
-                </form>
-                
-                <script>
-                    const li = document.querySelector("ul li"); //li4개 중 가장 위에거 가져옴 , querySelectorAll은 li 모두 가져오는거
-                    const errorFieldName = li.dataset.errorFieldName; //data-error-field-name을 맨 앞 data 접두어 제외 camel 표기법으로 표현
-                    
-                    if(errorFieldName.length > 0) {
-                        const form = document.querySelector("form");
-                        form[errorFieldName].focus();
-                    }
-                </script>
-                """.formatted(errorMessage, title, content);
-    }
 
-    @GetMapping("/posts/write")
-    @ResponseBody
-    public String write(){
-
-        return getWriteFormHtml("", "","");
-    }
 
     //입력값을 모아서 객체로 사용하기위한 역할
     @AllArgsConstructor
@@ -67,26 +39,23 @@ public class PostController {
     }
 
 
+    @GetMapping("/posts/write")
+    public String write(){
+        return "post/write"; // post는 template하위의 write.html이 들어있는 폴더명
+    }
+
     //POST 요청으로 받는다
     @PostMapping("/posts/doWrite")
-    @ResponseBody
     public String doWrite(
             //다음은 프레임워크 규칙임
-            //@ModelAttribute("")은 생략 가능,
-            //PostWriteform 클래스이름의 첫번째 단어를 소문자로 바꿔서 매개값으로 사용
-        @Validated @ModelAttribute("postWriteForm") PostWriteForm form // PostWriteForm 클래스 형태로 변환해서 받겠다
+            //@ModelAttribute("")은 생략 가능 , 객체들은 자동으로 model에 담긴다는듯
+            //@ModelAttribute를 이용해서 이름 재정의 안할 시 : PostWriteform 클래스이름의 첫번째 단어를 소문자로 바꿔서 매개값으로 사용
+            @Valid @ModelAttribute("postWriteForm") PostWriteForm form // PostWriteForm 클래스 형태로 변환해서 받겠다
             , BindingResult bindingResult//보고서 : 이걸 도입하면 내부적으로 체크하되 문제가 발생해도 일단 넘어감
+            , Model model
     ){
         //보고서 사용법
         if(bindingResult.hasErrors()){
-
-            String fieldName = "title";
-
-//            String errorMessages = bindingResult.getFieldErrors()
-//                    .stream()
-//                    .map(FieldError::getDefaultMessage)
-//                    .sorted()
-//                    .collect(Collectors.joining("<br>"));
 
             //ex)4 - 내용은 2글자 이상
             // => content - 4 - 내용은 2글자 이상
@@ -101,7 +70,8 @@ public class PostController {
                     .sorted()
                     .collect(Collectors.joining(""));
 
-            return getWriteFormHtml(errorMessages, form.title, form.content);
+            model.addAttribute("errorMessages", errorMessages); // model을 통해 데이터를 넘겨준다
+            return "post/write";
         }
 
         // 아래처럼 일일이 여기에 작성하지 말고 NotBlank와 Size, Validated를 이용하자
@@ -114,6 +84,10 @@ public class PostController {
 
         Post post = postService.write(form.title, form.content);
 
-        return "%d번 글이 작성되었습니다.".formatted(post.getId());
+        model.addAttribute("id", post.getId());
+        //model.addAttribute("form", form);
+        // 굳이 새로 넘겨주지 않아도 위에서 @ModelAttribute에 의해 "postWriteForm"이라는 이름으로 이미 사용가능하고,
+        // 바로 위에서의 model.addAttribute..로 인해 넘겨진다
+        return "post/writeDone";
     }
 }
