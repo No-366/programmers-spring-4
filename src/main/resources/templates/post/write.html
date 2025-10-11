@@ -11,12 +11,12 @@
 
 <form method="POST" action="/posts/doWrite" th:object="${postWriteForm}"> <!-- PostController에서 넘어온 ModelAttribute -->
     <div>
-        <label for="title" >제목</label>
-        <input type="text" name="title" id="title" placeholder="제목을 입력해주세요" th:value="*{title}" autoFocus>
+        <label for="title" >제목</label><!-- 실행중에 자바가 th:field="*{title}"를 보고 연결해주지만 지금 시점에서는 빨간색으로 뜸 = 정상임 -->
+        <input type="text" placeholder="제목을 입력해주세요" th:field="*{title}" autoFocus>
     </div>
     <div>
         <label for="content">내용</label>
-        <textarea name="content" id="content"  placeholder="내용을 입력해주세요" th:text="*{content}"></textarea>
+        <textarea  placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
     </div>
     <div>
         <input type="submit" value="작성">
