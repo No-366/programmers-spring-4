@@ -56,38 +56,11 @@ public class PostController {
     ){
         //보고서 사용법
         if(bindingResult.hasErrors()){
-
-            //ex)4 - 내용은 2글자 이상
-            // => content - 4 - 내용은 2글자 이상
-            // => <!--4--><li data-error-field-name = "content">내용은 2글자 이상</li>
-            String errorMessages = bindingResult.getFieldErrors()
-                    .stream()
-                    .map(field -> field.getField() + "-" + field.getDefaultMessage())
-                    .map(message -> message.split("-"))
-                    .map(bits -> """
-                            <!-- %s --><li data-error-field-name = "%s">%s</li>
-                            """.formatted(bits[1],bits[0], bits[2]))
-                    .sorted()
-                    .collect(Collectors.joining(""));
-
-            model.addAttribute("errorMessages", errorMessages); // model을 통해 데이터를 넘겨준다
             return "post/write";
         }
 
-        // 아래처럼 일일이 여기에 작성하지 말고 NotBlank와 Size, Validated를 이용하자
-//        if(title.isBlank()) return getWriteFormHtml("제목을 입력해주세요", title, content,"title");
-//        if(title.length()<2) return getWriteFormHtml("제목은 2글자 이상 적어주세요.", title, content,"title");
-//        if(title.length()>10) return getWriteFormHtml("제목은 10글자 이하로 적어주세요", title, content,"title");
-//        if(content.isBlank()) return getWriteFormHtml("내용을 입력해주세요", title, content, "content");
-//        if(content.length()<2) return getWriteFormHtml("내용은 2글자 이상 적어주세요.", title, content,"content");
-//        if(content.length()>100) return getWriteFormHtml("내용은 100글자를 넘을 수 없습니다", title, content,"content");
-
         Post post = postService.write(form.title, form.content);
-
         model.addAttribute("id", post.getId());
-        //model.addAttribute("form", form);
-        // 굳이 새로 넘겨주지 않아도 위에서 @ModelAttribute에 의해 "postWriteForm"이라는 이름으로 이미 사용가능하고,
-        // 바로 위에서의 model.addAttribute..로 인해 넘겨진다
         return "post/writeDone";
     }
 }

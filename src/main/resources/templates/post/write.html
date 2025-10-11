@@ -5,11 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<ul style="color:red" th:utext="${errorMessages}">
 
-</ul>
 
 <form method="POST" action="/posts/doWrite" th:object="${postWriteForm}"> <!-- PostController에서 넘어온 ModelAttribute -->
+
+    <ul th:if="${#fields.hasAnyErrors()}" style="color:red" >
+        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+    </ul>
+
     <div>
         <label for="title" >제목</label><!-- 실행중에 자바가 th:field="*{title}"를 보고 연결해주지만 지금 시점에서는 빨간색으로 뜸 = 정상임 -->
         <input type="text" placeholder="제목을 입력해주세요" th:field="*{title}" autoFocus>
