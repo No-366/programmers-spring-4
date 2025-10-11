@@ -40,7 +40,7 @@ public class PostController {
 
 
     @GetMapping("/posts/write")
-    public String write(){
+    public String write(@ModelAttribute("postWriteForm") PostWriteForm form){
         return "post/write"; // post는 template하위의 write.html이 들어있는 폴더명
     }
 
