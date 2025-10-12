@@ -7,7 +7,8 @@
 <body>
 
 
-<form method="POST" action="/posts/doWrite" th:object="${postWriteForm}"> <!-- PostController에서 넘어온 ModelAttribute -->
+
+<form method="POST" action="/posts/write" th:object="${postWriteForm}"> <!-- PostController에서 넘어온 ModelAttribute -->
     <div th:replace="~{post/form_errors :: formErrorsFragment}"></div>
     <div>
         <label for="title" >제목</label><!-- 실행중에 자바가 th:field="*{title}"를 보고 연결해주지만 지금 시점에서는 빨간색으로 뜸 = 정상임 -->

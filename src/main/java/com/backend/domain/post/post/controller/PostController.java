@@ -45,7 +45,7 @@ public class PostController {
     }
 
     //POST 요청으로 받는다
-    @PostMapping("/posts/doWrite")
+    @PostMapping("/posts/write")
     public String doWrite(
             //다음은 프레임워크 규칙임
             //@ModelAttribute("")은 생략 가능 , 객체들은 자동으로 model에 담긴다는듯
@@ -61,6 +61,6 @@ public class PostController {
 
         Post post = postService.write(form.title, form.content);
         model.addAttribute("id", post.getId());
-        return "post/writeDone";
+        return "redirect:/posts/write";
     }
 }
